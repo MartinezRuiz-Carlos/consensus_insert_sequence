@@ -1,0 +1,12 @@
+name: sequence_ins
+channels:
+  - bioconda/label/cf201901
+  - conda-forge
+  - bioconda
+  - defaults
+  - auto
+  - anaconda
+dependencies:
+  - mafft=7.407=0
+  - seqkit=2.10.1=he881be0_0
+prefix: /camp/home/ruizc/tracerx-lung/tctProjects/ruizc/apps/anaconda/envs/sequence_ins

@@ -2,9 +2,9 @@
 #SBATCH --job-name=consensus_sequence      # Job name
 #SBATCH --ntasks=1                              # Run one tasks
 #SBATCH --mem=16G                               # Job Memory
-#SBATCH --time=4:00:00                          # Time limit hrs:min:sec
+#SBATCH --time=23:00:00                          # Time limit hrs:min:sec
 #SBATCH --output=tmp/logs/consensus_sequence_%A_%a.log     # Standard output and error log
-#SBATCH --array=0-32                          #Number of tasks to run 
+#SBATCH --array=0-25                          #Number of tasks to run 
 ml purge
 module load MAFFT/7.505-GCC-11.3.0-with-extensions
 
@@ -15,7 +15,7 @@ mkdir -p ${TMP_DIR}
 mkdir -p ${OUT_DIR}
 
 # Generate an array of samples
-SAMPLES_ARRAY=($(ls tmp/* | tr '\n' ' '))
+SAMPLES_ARRAY=($(ls ${TMP_DIR} | tr '\n' ' '))
 
 # Divide the array into more manageable chunks
 CHUNK_START=$((SLURM_ARRAY_TASK_ID * 1000))
