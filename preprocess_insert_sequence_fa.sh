@@ -4,19 +4,14 @@
 INPUT_INSERTS=$1
 OUTPUT=$2
 mkdir -p ${OUTPUT}
-# Get fasta sequences into a single line
-awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < ${INPUT_INSERTS} > ${OUTPUT}/tmp_oneline.fasta
+
+source activate seqkit_env
 # Get the sequences to align from the savana output (ID[0-9]+-INS.+)
-INSERT_IDS=($(grep '^>' ${INPUT_INSERTS} | cut -d '-' -f 1 | sort -u | sed 's/^>//g' | tr '\n' ' '))
+grep '^>' ${INPUT_INSERTS} | cut -d '-' -f 1 | sort -u | sed 's/^>//g' > ${OUTPUT}/ins_ids.txt
 
-# Split the fasta by ID
-for THIS_ID in ${INSERT_IDS[@]}; do
-    grep ${THIS_ID}- -A1 ${OUTPUT}/tmp_oneline.fasta > ${OUTPUT}/${THIS_ID}.fasta
-done
+# Use seqkit to split the fasta by insertion ID
+while read INS_ID; do
+    seqkit grep -r -p "${INS_ID}-" ${INPUT_INSERTS} > ${OUTPUT}/${INS_ID}.fasta
+done < ${OUTPUT}/ins_ids.txt
 
-THIS NEEDS A BIG REVAMP, MAKE MORE EFFICIENT, USE SEQKIT GREP ONCE THE CONDE ENVS ARE BACK TO NORMAL (OR DOCKERIZE):https://bioinf.shenwei.me/seqkit/usage/#grep
-# Ensure run has finished successfuly and remove tmp fasta
-if [ $? -eq 0 ]; then
-    echo "DONE"
-    rm ${OUTPUT}/tmp_oneline.fasta
-fi
+conda deactivate
